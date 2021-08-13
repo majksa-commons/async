@@ -58,6 +58,42 @@ dependencies {
 ```
 
 ## How to use
+### Awaited object
+This feature gives you the opportunity to await a state of an object as a CompletableFuture.<br>
+For example, you want to wait for an event to happen and then use the event in the main thread.<br>
+1. Start of with creating the object
+```java
+final AwaitedObject<Integer> awaitedInteger = new AwaitedObject();
+```
+2. Next you need to pass this object to the event listener. This line is very specific on the event listener itself but it should give you a brief idea on how to use it.
+```java
+listener.onUserLogin(user -> awaitedInteger.set(user.getId()));
+```
+3. Finally, you can get the CompletableFuture by calling get method on the awaited integer.
+```java
+awaitedInteger.get().thenAccept(System.out::println);
+```
+
+### Scheduled task
+Using this, you can schedule a runnable to be executed on a Date. You can also easily set a Date to reschedule it or cancel it.
+Example usage:
+```java
+// The result holder
+final AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+// The original date
+final Date date = ...;
+// Schedule the task
+final ScheduledTask schedule = ScheduledTask.schedule(instance.getTime(), () -> atomicBoolean.set(true));
+
+// Change the date of task to happen in 3 seconds
+final Calendar calendar = Calendar.getInstance();
+calendar.add(Calendar.SECOND, 3);
+schedule.setDate(calendar.getTime());
+
+// Await the task
+schedule.get().join();
+// atomicBoolean.get() is now set to true
+```
 
 ## Built With
 
